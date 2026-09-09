@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Lightning.Api/Lighting.Api.csproj" />
+    <Project Path="Lightning.Domain/Lighting.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="LightingTests/LightingTests.csproj" Id="acd7fbc9-5fa3-42f8-b76b-bd9550b0631f" />
+  </Folder>
+</Solution>

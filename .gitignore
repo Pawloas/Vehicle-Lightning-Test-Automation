@@ -1,0 +1,13 @@
+.vs/
+
+LightingTests/bin/
+LightingTests/obj/
+
+Lightning.Api/bin/
+Lightning.Api/obj/
+
+Lightning.Domain/bin/
+Lightning.Domain/obj/
+
+Lightning.UnitTests/bin/
+Lightning.UnitTests/obj/

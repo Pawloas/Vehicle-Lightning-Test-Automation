@@ -9,9 +9,8 @@ namespace LightingTests
 		public void NewLightingSystem_ShouldBeOff()
 		{
 			LightingSystem lightingSystem = new LightingSystem();
-			LightingStatus lightingStatus = lightingSystem.GetLightingStatus();
 
-			Assert.Equal(LightMode.Off, lightingStatus.Mode);
+			Assert.Equal(LightMode.Off, lightingSystem.LightMode);
 		}
 
 		
@@ -19,15 +18,14 @@ namespace LightingTests
 		public void NewLightingSystem_ShouldEnterPositionMode()
 		{
 			LightingSystem lightingSystem = new LightingSystem();
-			LightingStatus lightingStatus = lightingSystem.GetLightingStatus();
 
-			lightingSystem.SetVoltage(LightingConstants.OperatingVoltage);
-			lightingSystem.SetTemperature(LightingConstants.OperatingTemperature);
-			lightingSystem.SetIntensity(LightingConstants.ParkingIntensity);
+			lightingSystem.Voltage = LightingConstants.OperatingVoltage;
+			lightingSystem.Temperature = LightingConstants.OperatingTemperature;
+			lightingSystem.Intensity = LightingConstants.ParkingIntensity;
 
-			lightingSystem.SetLightMode(LightMode.Position);
+			lightingSystem.LightMode = LightMode.Position;
 
-			Assert.Equal(LightMode.Position, lightingStatus.Mode);
+			Assert.Equal(LightMode.Position, lightingSystem.LightMode);
 		}
 
 	}

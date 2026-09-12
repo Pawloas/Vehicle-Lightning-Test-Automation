@@ -13,13 +13,9 @@ namespace Lighting.Domain.Diagnostics.MeasurementsInfo
 
 		public double Volts { get => RawValue; }
 
-		public int CompareTo(Voltage? other)
-		{
-			if (other is null) return 1;
-			return RawValue.CompareTo(other.RawValue);
-		}
+		public int CompareTo(Voltage? other) => base.ComprareTo(other);
 
-		public static implicit operator double(Voltage v) => v is null ? default : v.RawValue;
+		public static implicit operator double(Voltage voltage) => voltage is null ? default : voltage.RawValue;
 
 		public override string ToString()
 		{

@@ -11,13 +11,9 @@ namespace Lighting.Domain.Diagnostics.MeasurementsInfo
 
 		public double Percentages { get => RawValue; }
 
-		public int CompareTo(Intensity? other)
-		{
-			if (other is null) return 1;
-			return RawValue.CompareTo(other.RawValue);
-		}
+		public int CompareTo(Intensity? other) => base.ComprareTo(other);
 
-		public static implicit operator int(Intensity i) => i is null ? default : (int)i.RawValue;
+		public static implicit operator double(Intensity intensity) => intensity is null ? default : intensity.RawValue;
 
 		public override string ToString()
 		{

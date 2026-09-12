@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Numerics;
 
 namespace Lighting.Domain.Diagnostics.MeasurementsInfo
 {
-	public abstract class MeasurementInfo<T> where T : notnull, IComparable<T>, System.Numerics.INumber<T>
+	public abstract class MeasurementInfo<T> where T : notnull, IComparable<T>, INumber<T>
 	{
 		protected T RawValue { get; set; }
 
@@ -14,10 +15,12 @@ namespace Lighting.Domain.Diagnostics.MeasurementsInfo
 		{
 			RawValue = value;
 		}
-
-		public bool ComprareTo(MeasurementInfo<T> other)
+		
+		public int ComprareTo(MeasurementInfo<T>? other)
 		{
-			return RawValue.CompareTo(other.RawValue) == 0;
+			ArgumentNullException.ThrowIfNull(other);
+
+			return RawValue.CompareTo(other.RawValue);
 		}
 	}
 }

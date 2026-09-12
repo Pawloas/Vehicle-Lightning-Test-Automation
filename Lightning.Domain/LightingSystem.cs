@@ -12,42 +12,38 @@ namespace Lighting.Domain
 	{
 		private readonly LightingStatus _lightingStatus = new LightingStatus();
 		private readonly LightingStateMachine _lightingStateMachine = new LightingStateMachine();
-		private readonly Diagnostic<Temperature> _temperature = new Diagnostic<Temperature>();
 
 		public LightingSystem() { }
 
-
-		public void SetLightMode(LightMode newLightMode)
+		public LightMode LightMode
 		{
-			LightMode currentLightMode = _lightingStatus.Mode;
-			_lightingStatus.Mode = newLightMode;
+			get => _lightingStatus.Mode;
+			set
+			{
+				HashSet<TransitionRule> transitionRules = _lightingStateMachine.TransitionRulesToNewMode(from: _lightingStatus.Mode, to: value);
+				bool canMakeTransition = _lightingStateMachine.DoesTransitionRuleExist(transitionRules);
 
-			if (_lightingStateMachine.CanTransition(from: currentLightMode, 
-													to: newLightMode, 
-													currentVoltage: _lightingStatus.Voltage, 
-													currentTemperature: _lightingStatus.Temperature, 
-													currentIntensity: _lightingStatus.Intensity))
-			{
-				_lightingStatus.Diagnostic.SetDefaultSetting();
-			}
-			else
-			{
-				_lightingStatus.Diagnostic.SetDiagnosticSetting(code: DiagnosticCode.InvalidLightMode,
-																severity: DiagnosticSeverity.Critical,
-																parameter: DiagnosticParameter.LightMode,
-																message: $"Transition from {currentLightMode} to {newLightMode} is not allowed !");
+				_lightingStatus.SetLightMode(value, _lightingStateMachine.CanMakeTransitionToNewMode(from: _lightingStatus.Mode, to: value), transitionRules);
 			}
 		}
 
-		public void SetIntensity(Intensity newIntensity) => _lightingStatus.Intensity = newIntensity;
-		public void SetVoltage(Voltage newVoltage) => _lightingStatus.Voltage = newVoltage;
-		public void SetTemperature(Temperature newTemperature) => _lightingStatus.Temperature = newTemperature;
+		public Intensity Intensity
+		{
+			get => _lightingStatus.Intensity;
+			set => _lightingStatus.Intensity = value;
+		}
 
+		public Voltage Voltage
+		{
+			get => _lightingStatus.Voltage;
+			set => _lightingStatus.Voltage = value;
+		}
 
-		public LightMode GetLightMode() => _lightingStatus.Mode;
-		public Intensity GetIntensity() => _lightingStatus.Intensity;
-		public Voltage GetVoltage() => _lightingStatus.Voltage;
-		public Temperature GetTemperature() => _lightingStatus.Temperature;
-		public LightingStatus GetLightingStatus() => _lightingStatus;
+		public Temperature Temperature
+		{
+			get => _lightingStatus.Temperature;
+			set => _lightingStatus.Temperature = value;
+		}
+
 	}
 }

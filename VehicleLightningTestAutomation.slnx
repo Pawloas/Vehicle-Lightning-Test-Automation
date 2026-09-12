@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Položky řešení/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="Lightning.Api/Lighting.Api.csproj" />
     <Project Path="Lightning.Domain/Lighting.Domain.csproj" />

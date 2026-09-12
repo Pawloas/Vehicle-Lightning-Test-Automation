@@ -17,10 +17,10 @@ namespace Lighting.Domain.StateMachine
 			MaxRange = maxRange;
 		}
 
-		public bool IsInRange(T meanValue)
+		public bool IsInRange(T measurementValue)
 		{
-			bool meanValueAfterMinRange = meanValue.CompareTo(MinRange) >= 0;
-			bool meanValueBeforeMaxRange = MaxRange.CompareTo(meanValue) >= 0;
+			bool meanValueAfterMinRange = measurementValue.CompareTo(MinRange) >= 0;
+			bool meanValueBeforeMaxRange = MaxRange.CompareTo(measurementValue) >= 0;
 
 			return meanValueAfterMinRange && meanValueBeforeMaxRange;
 		}

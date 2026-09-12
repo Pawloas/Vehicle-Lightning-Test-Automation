@@ -9,6 +9,7 @@ namespace Lighting.Domain.StateMachine
 {
 	public class LightingStateMachine
 	{
+		public LightingStateMachine() { }
 		/*private readonly Dictionary<LightMode, HashSet<LightMode>> _transtionRules = new Dictionary<LightMode, HashSet<LightMode>>
 		{
 			[LightMode.Off] = new() { LightMode.Position },
@@ -115,16 +116,22 @@ namespace Lighting.Domain.StateMachine
 				}
 		};
 
-		public bool CanTransition(LightMode from, LightMode to, Voltage currentVoltage, Temperature currentTemperature, Intensity currentIntensity)
+		public bool DoesTransitionRuleExist(HashSet<TransitionRule> transitionRules) => transitionRules.Count > 0;
+
+		public bool CanMakeTransitionToNewMode(LightMode from, LightMode to) => DoesTransitionRuleExist(TransitionRulesToNewMode(from, to));
+
+		public bool CanMakeTransitionToNewMode(HashSet<TransitionRule> transitionRules) => DoesTransitionRuleExist(transitionRules);
+
+		public HashSet<TransitionRule> TransitionRulesToNewMode(LightMode from, LightMode to)
 		{
-			bool canPossiblyTransitionToMode = _transtionRules.TryGetValue(from, out HashSet<TransitionRule>? transtionRulesResult);
+			bool doesTransitionRuleExist = _transtionRules.TryGetValue(from, out HashSet<TransitionRule>? transtionRulesResult);
 
-			if (!canPossiblyTransitionToMode || (transtionRulesResult == null))
-				return false;
+			if (doesTransitionRuleExist == false || transtionRulesResult == null)
+				return new HashSet<TransitionRule>();
 
-			return transtionRulesResult.Any(transition => transition.NewTransitionMode == to && transition.CanTransition(currentVoltage, currentTemperature, currentIntensity));
+			return transtionRulesResult.Where(transitionRule => transitionRule.NewTransitionMode == to).ToHashSet();
 		}
 
-		public LightingStateMachine() { }
+		
 	}
 }

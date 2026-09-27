@@ -8,7 +8,6 @@ namespace Lighting.Domain.Diagnostics
 	{
 		Info,
 		Warning,
-		Critical,
 		Error
 	}
 }

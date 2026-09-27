@@ -9,13 +9,17 @@ namespace Lighting.Domain.Diagnostics
 		None,
 		InvalidLightMode,
 
-		IntensityBellowTreshold,
-		IntensityOverTreshold,
+		MinIntensity,
+		MaxIntensity,
 
-		HighTemperature,
-		Overheating,
+		MinTemperature,
+		MinWarningTemperature,
+		MaxWarningTemperature,
+		MaxTemperature,
 
-		UnderVoltage,
-		OverVoltage
+		MinVoltage,
+		MinWarningVoltage,
+		MaxWarningVoltage,
+		MaxVoltage,
 	}
 }

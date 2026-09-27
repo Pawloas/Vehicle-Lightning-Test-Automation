@@ -45,5 +45,33 @@ namespace Lighting.Domain
 			set => _lightingStatus.Temperature = value;
 		}
 
+		public void SetMinVoltage()
+		{
+			Voltage = LightingConstants.MinVoltage;
+		}
+		public void SetMaxVoltage()
+		{
+			Voltage = LightingConstants.MaxVoltage;
+		}
+
+		public void SetMinTemperature()
+		{
+			Temperature = LightingConstants.MinTemperature;
+		}
+
+		public void SetMaxTemperature()
+		{
+			Temperature = LightingConstants.MaxTemperature;
+		}
+
+		public void SetMaxIntensity()
+		{
+			Intensity = LightingConstants.MaxIntensity;
+		}
+		public void SetMinIntensity()
+		{
+			Intensity = LightingConstants.MinIntensity;
+		}
+
 	}
 }

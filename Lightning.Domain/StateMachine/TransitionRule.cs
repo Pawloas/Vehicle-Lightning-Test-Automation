@@ -23,10 +23,6 @@ namespace Lighting.Domain.StateMachine
 			return voltageInRange && temperatureInRange && intensityInRange;
 		}
 
-		public TransitionRule()
-		{
-
-		}
 
 		public TransitionRule(LightMode newTransitionMode, AllowedRange<Voltage> voltageRange, AllowedRange<Temperature> temperatureRange, AllowedRange<Intensity> intensityRange)
 		{

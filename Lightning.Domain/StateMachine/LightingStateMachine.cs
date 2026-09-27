@@ -10,25 +10,17 @@ namespace Lighting.Domain.StateMachine
 	public class LightingStateMachine
 	{
 		public LightingStateMachine() { }
-		/*private readonly Dictionary<LightMode, HashSet<LightMode>> _transtionRules = new Dictionary<LightMode, HashSet<LightMode>>
-		{
-			[LightMode.Off] = new() { LightMode.Position },
-			[LightMode.Position] = new() { LightMode.LowBeam, LightMode.Off },
-			[LightMode.LowBeam] = new() { LightMode.HighBeam, LightMode.Fog, LightMode.Off },
-			[LightMode.HighBeam] = new() { LightMode.LowBeam },
-			[LightMode.Fog] = new() { LightMode.LowBeam }
-		};*/
 
 		private readonly Dictionary<LightMode, HashSet<TransitionRule>> _transtionRules = new Dictionary<LightMode, HashSet<TransitionRule>>
 		{
 			[LightMode.Off] = new() 
 				{ 
 					new TransitionRule(newTransitionMode: LightMode.Position,
-									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.CriticalLowVoltage,
-														 					   maxRange: LightingConstants.MaxVoltage),
+									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+														 					   maxRange: LightingConstants.OperatingVoltage),
 
 									   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																			       maxRange: LightingConstants.HighTresholdTemperature),
+																			       maxRange: LightingConstants.MaxTemperature),
 
 									   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.MinIntensity,
 																		      maxRange: LightingConstants.ReducedIntensity))
@@ -37,18 +29,18 @@ namespace Lighting.Domain.StateMachine
 			[LightMode.Position] = new()
 				{ 
 					new TransitionRule(newTransitionMode: LightMode.LowBeam,
-									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.MinVoltage,
-																			   maxRange: LightingConstants.MaxVoltage),
+									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																			   maxRange: LightingConstants.OperatingVoltage),
 
 									   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																			       maxRange: LightingConstants.HighTresholdTemperature),
+																			       maxRange: LightingConstants.MaxTemperature),
 
 									   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.ParkingIntensity,
 																		      maxRange: LightingConstants.MaxIntensity)),
 
 					new TransitionRule(newTransitionMode: LightMode.Off,
-									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.CriticalLowVoltage,
-																			   maxRange: LightingConstants.MaxVoltage),
+									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																			   maxRange: LightingConstants.OperatingVoltage),
 
 									   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
 																			       maxRange: LightingConstants.MaxTemperature),
@@ -59,28 +51,28 @@ namespace Lighting.Domain.StateMachine
 			[LightMode.LowBeam] = new()
 				{
 						new TransitionRule(newTransitionMode: LightMode.HighBeam,
-										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.MinStableVoltage,
-																				   maxRange: LightingConstants.MaxVoltage),
+										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																				   maxRange: LightingConstants.OperatingVoltage),
 
 										   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																					   maxRange: LightingConstants.WarningTemperature),
+																					   maxRange: LightingConstants.MaxTemperature),
 
 										   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.StandardIntensity,
 																			      maxRange: LightingConstants.MaxIntensity)),
 
 						new TransitionRule(newTransitionMode: LightMode.Fog,
-										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.MinVoltage,
-																				   maxRange: LightingConstants.MaxVoltage),
+										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																				   maxRange: LightingConstants.OperatingVoltage),
 
 										   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																					   maxRange: LightingConstants.HighTresholdTemperature),
+																					   maxRange: LightingConstants.MaxTemperature),
 
 										   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.ParkingIntensity,
 																				  maxRange: LightingConstants.MaxIntensity)),
 
 						new TransitionRule(newTransitionMode: LightMode.Off,
-										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.CriticalLowVoltage,
-																				   maxRange: LightingConstants.MaxVoltage),
+										   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																				   maxRange: LightingConstants.OperatingVoltage),
 
 										   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
 																					maxRange: LightingConstants.MaxTemperature),
@@ -92,11 +84,11 @@ namespace Lighting.Domain.StateMachine
 			[LightMode.HighBeam] = new()
 			{
 				new TransitionRule(newTransitionMode: LightMode.LowBeam,
-								   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.CriticalLowVoltage,
-																		   maxRange: LightingConstants.MaxVoltage),
+								   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																		   maxRange: LightingConstants.OperatingVoltage),
 
 								   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																			   maxRange: LightingConstants.HighTresholdTemperature),
+																			   maxRange: LightingConstants.MaxTemperature),
 
 								   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.ParkingIntensity,
 																		  maxRange: LightingConstants.MaxIntensity)),
@@ -105,11 +97,11 @@ namespace Lighting.Domain.StateMachine
 			[LightMode.Fog] = new() 
 				{
 					new TransitionRule(newTransitionMode: LightMode.LowBeam,
-									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.CriticalLowVoltage,
-																			   maxRange: LightingConstants.MaxVoltage),
+									   voltageRange: new AllowedRange<Voltage> (minRange: LightingConstants.OperatingVoltage,
+																			   maxRange: LightingConstants.OperatingVoltage),
 
 									   temperatureRange: new AllowedRange<Temperature> (minRange: LightingConstants.MinTemperature,
-																			    maxRange: LightingConstants.HighTresholdTemperature),
+																			    maxRange: LightingConstants.MaxTemperature),
 
 									   intensityRange: new AllowedRange<Intensity> (minRange: LightingConstants.ParkingIntensity,
 																			  maxRange: LightingConstants.MaxIntensity)),

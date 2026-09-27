@@ -10,4 +10,5 @@
   <Folder Name="/tests/">
     <Project Path="LightingTests/LightingTests.csproj" Id="acd7fbc9-5fa3-42f8-b76b-bd9550b0631f" />
   </Folder>
+  <Folder Name="/tests/Lighting System/" />
 </Solution>

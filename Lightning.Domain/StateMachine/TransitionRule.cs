@@ -13,7 +13,16 @@ namespace Lighting.Domain.StateMachine
 		public AllowedRange<Voltage> VoltageRange { get; set; } = new AllowedRange<Voltage>(minRange: LightingConstants.MinVoltage, maxRange: LightingConstants.MaxVoltage);
 		public AllowedRange<Temperature> TemperatureRange { get; set; } = new AllowedRange<Temperature>(minRange: LightingConstants.MinTemperature, maxRange: LightingConstants.MaxTemperature);
 		public AllowedRange<Intensity> IntensityRange { get; set; } = new AllowedRange<Intensity>(minRange: LightingConstants.MinIntensity, maxRange: LightingConstants.MaxIntensity);
-		
+
+
+		public TransitionRule(LightMode newTransitionMode, AllowedRange<Voltage> voltageRange, AllowedRange<Temperature> temperatureRange, AllowedRange<Intensity> intensityRange)
+		{
+			NewTransitionMode = newTransitionMode;
+			VoltageRange = voltageRange;
+			TemperatureRange = temperatureRange;
+			IntensityRange = intensityRange;
+		}
+
 		public bool AreMeasurementsInRange(Voltage currentVoltage, Temperature currentTemperature, Intensity currentIntensity)
 		{
 			bool voltageInRange = VoltageRange.IsInRange(currentVoltage);
@@ -24,12 +33,5 @@ namespace Lighting.Domain.StateMachine
 		}
 
 
-		public TransitionRule(LightMode newTransitionMode, AllowedRange<Voltage> voltageRange, AllowedRange<Temperature> temperatureRange, AllowedRange<Intensity> intensityRange)
-		{
-			NewTransitionMode = newTransitionMode;
-			VoltageRange = voltageRange;
-			TemperatureRange = temperatureRange;
-			IntensityRange = intensityRange;
-		}
 	}
 }

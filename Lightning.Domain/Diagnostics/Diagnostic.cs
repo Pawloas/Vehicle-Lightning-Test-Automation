@@ -12,16 +12,15 @@ namespace Lighting.Domain.Diagnostics
 	{
 		public DiagnosticCode Code { get; set; } = DiagnosticCode.None;
 		public DiagnosticSeverity Severity { get; set; } = DiagnosticSeverity.Info;
-		public DiagnosticParameter Parameter { get; set; } = DiagnosticParameter.None;
+		public DiagnosticParameter Parameter { get; private set; } = DiagnosticParameter.None;
 		public string Message { get; set; } = string.Empty;
 		public DateTime TimeStamp { get; set; } = DateTime.Now;
 
-
-		public Diagnostic()
+		public Diagnostic(DiagnosticParameter parameter)
 		{
 			Code = DiagnosticCode.None;
 			Severity = DiagnosticSeverity.Info;
-			Parameter = DiagnosticParameter.None;
+			Parameter = parameter;	
 			Message = string.Empty;
 			TimeStamp = DateTime.Now;
 		}
@@ -39,16 +38,14 @@ namespace Lighting.Domain.Diagnostics
 		{
 			Code = DiagnosticCode.None;
 			Severity = DiagnosticSeverity.Info;
-			Parameter = DiagnosticParameter.None;
 			Message = string.Empty;
 			TimeStamp = DateTime.Now;
 		}
 
-		public void SetDiagnosticSetting(DiagnosticCode code, DiagnosticSeverity severity, DiagnosticParameter parameter, string message = "")
+		public void SetDiagnosticSetting(DiagnosticCode code, DiagnosticSeverity severity, string message = "")
 		{
 			Code = code;
 			Severity = severity;
-			Parameter = parameter;
 			Message = message;
 			TimeStamp = DateTime.Now;
 		}
@@ -58,7 +55,19 @@ namespace Lighting.Domain.Diagnostics
 	{
 		public T ActualValue = new T();
 
-		public Diagnostic(T actualValue) : base()
+		private static DiagnosticParameter FindDiagnosticParameterFromTType(T actualValue)
+		{
+			return typeof(T) switch
+			{
+				var t when t == typeof(Temperature) => DiagnosticParameter.Temperature,
+				var t when t == typeof(Voltage) => DiagnosticParameter.Voltage,
+				var t when t == typeof(Intensity) => DiagnosticParameter.Intensity,
+				_ => throw new ArgumentException(
+					$"Unsupported type {typeof(T).Name} for Diagnostic<T>")
+			};
+		}
+
+		public Diagnostic(T actualValue) : base(FindDiagnosticParameterFromTType(actualValue))
 		{
 			ActualValue = actualValue;
 		}

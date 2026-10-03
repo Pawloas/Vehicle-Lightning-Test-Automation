@@ -45,6 +45,11 @@ namespace Lighting.Domain
 			set => _lightingStatus.Temperature = value;
 		}
 
+		public DiagnosticManager DiagnosticManager
+		{
+			get => _lightingStatus.DiagnosticManager;
+		}
+
 		public void SetMinVoltage()
 		{
 			Voltage = LightingConstants.MinVoltage;

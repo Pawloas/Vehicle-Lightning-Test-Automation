@@ -12,11 +12,11 @@ namespace Lighting.Domain.Diagnostics
 	{
 
 		public LightMode Mode { get; set; } = LightMode.Off;
-		public DiagnosticManager DiagnosticManager { get; set; } = new DiagnosticManager();
+		public DiagnosticManager DiagnosticManager { get; set; }
 
-		private Diagnostic<Intensity> _intensityDiagnostic => DiagnosticManager.IntensityDiagnostic;
-		private Diagnostic<Temperature> _temperatureDiagnostic => DiagnosticManager.TemperatureDiagnostic;
-		private Diagnostic<Voltage> _voltageDiagnostic => DiagnosticManager.VoltageDiagnostic;
+		private Diagnostic<Intensity> IntensityDiagnostic => DiagnosticManager.IntensityDiagnostic;
+		private Diagnostic<Temperature> TemperatureDiagnostic => DiagnosticManager.TemperatureDiagnostic;
+		private Diagnostic<Voltage> VoltageDiagnostic => DiagnosticManager.VoltageDiagnostic;
 
 		public void SetLightMode(LightMode newLightMode, bool canMakeTransition, HashSet<TransitionRule> transitionRules)
 		{
@@ -29,20 +29,20 @@ namespace Lighting.Domain.Diagnostics
 
 			TransitionRule transitionRule = transitionRules.First();
 
-			bool areCurrentMeasurementsSeverityNotCritical = _intensityDiagnostic.Severity == DiagnosticSeverity.Info &&
-															 _temperatureDiagnostic.Severity == DiagnosticSeverity.Info &&
-															 _voltageDiagnostic.Severity == DiagnosticSeverity.Info;
+			bool areCurrentMeasurementsSeverityNotCritical = IntensityDiagnostic.Severity == DiagnosticSeverity.Info &&
+															 TemperatureDiagnostic.Severity == DiagnosticSeverity.Info &&
+															 VoltageDiagnostic.Severity == DiagnosticSeverity.Info;
 
-			bool areNewMeasurementsInRange = transitionRule.AreMeasurementsInRange(currentVoltage: _voltageDiagnostic.ActualValue,
-																					currentTemperature: _temperatureDiagnostic.ActualValue,
-																					currentIntensity: _intensityDiagnostic.ActualValue);
+			bool areNewMeasurementsInRange = transitionRule.AreMeasurementsInRange(currentVoltage: VoltageDiagnostic.ActualValue,
+																					currentTemperature: TemperatureDiagnostic.ActualValue,
+																					currentIntensity: IntensityDiagnostic.ActualValue);
 
 			if (areCurrentMeasurementsSeverityNotCritical && areNewMeasurementsInRange)
 			{
 				Mode = newLightMode;
-				_intensityDiagnostic.SetDefaultSetting();
-				_temperatureDiagnostic.SetDefaultSetting();
-				_voltageDiagnostic.SetDefaultSetting();
+				IntensityDiagnostic.SetDefaultSetting();
+				TemperatureDiagnostic.SetDefaultSetting();
+				VoltageDiagnostic.SetDefaultSetting();
 			}
 
 		}
@@ -74,27 +74,25 @@ namespace Lighting.Domain.Diagnostics
 
 		public Intensity Intensity
 		{
-			get => _intensityDiagnostic.ActualValue;
+			get => IntensityDiagnostic.ActualValue;
 			set
 			{
-				_intensityDiagnostic.ActualValue = value;
-				_intensityDiagnostic.SetDefaultSetting();
+				IntensityDiagnostic.ActualValue = value;
+				IntensityDiagnostic.SetDefaultSetting();
 
 				if (value < LightingConstants.MinIntensity.Percentages)
 				{
-					_intensityDiagnostic.SetDiagnosticSetting(
+					IntensityDiagnostic.SetDiagnosticSetting(
 										code: DiagnosticCode.MinIntensity,
 										severity: DiagnosticSeverity.Error,
-										parameter: DiagnosticParameter.Intensity,
 										message: $"Intensity value was set as ({value}), but permitted is <{LightingConstants.MinIntensity}, {LightingConstants.MaxIntensity}>");
 				}
 
 				else if (value > LightingConstants.MaxIntensity.Percentages)
 				{
-					_intensityDiagnostic.SetDiagnosticSetting(
+					IntensityDiagnostic.SetDiagnosticSetting(
 										code: DiagnosticCode.MaxIntensity,
 										severity: DiagnosticSeverity.Error,
-										parameter: DiagnosticParameter.Intensity,
 										message: $"Intensity value was set as ({value}), but permitted is <{LightingConstants.MinIntensity}, {LightingConstants.MaxIntensity}>");
 				}
 			}
@@ -102,44 +100,40 @@ namespace Lighting.Domain.Diagnostics
 
 		public Temperature Temperature
 		{
-			get => _temperatureDiagnostic.ActualValue;
+			get => TemperatureDiagnostic.ActualValue;
 			set
 			{
-				_temperatureDiagnostic.ActualValue = value;
-				_temperatureDiagnostic.SetDefaultSetting();
+				TemperatureDiagnostic.ActualValue = value;
+				TemperatureDiagnostic.SetDefaultSetting();
 
 				if (value < LightingConstants.MinTemperature.Celsius)
 				{
-					_temperatureDiagnostic.SetDiagnosticSetting(
+					TemperatureDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MinTemperature,
 											severity: DiagnosticSeverity.Error,
-											parameter: DiagnosticParameter.Temperature,
 											message: $"Temperature value was set as ({value}), but it exceeded the threshold temperature which is ({LightingConstants.MinTemperature} °C)");
 				}
 				else if (value <= LightingConstants.MinWarningTemperature.Celsius)
 				{
-					_temperatureDiagnostic.SetDiagnosticSetting(
+					TemperatureDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MinWarningTemperature,
 											severity: DiagnosticSeverity.Warning,
-											parameter: DiagnosticParameter.Temperature,
 											message: $"Temperature value was set as ({value}), but it approached the threshold temperature which is ({LightingConstants.MinWarningTemperature} °C)");
 					return;
 				}
 				else if (value >= LightingConstants.MaxWarningTemperature.Celsius)
 				{
-					_temperatureDiagnostic.SetDiagnosticSetting(
+					TemperatureDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MaxWarningTemperature,
 											severity: DiagnosticSeverity.Warning,
-											parameter: DiagnosticParameter.Temperature,
 											message: $"Temperature value was set as ({value}), but it approached the threshold temperature which is ({LightingConstants.MaxWarningTemperature} °C)");
 					return;
 				}
 				else if (value > LightingConstants.MaxWarningTemperature.Celsius)
 				{
-					_temperatureDiagnostic.SetDiagnosticSetting(
+					TemperatureDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MaxTemperature,
 											severity: DiagnosticSeverity.Warning,
-											parameter: DiagnosticParameter.Temperature,
 											message: $"Temperature value was set as ({value}), but it exceeded the threshold temperature which is ({LightingConstants.MaxTemperature} °C)");
 				}
 			}
@@ -147,53 +141,53 @@ namespace Lighting.Domain.Diagnostics
 
 		public Voltage Voltage
 		{
-			get => _voltageDiagnostic.ActualValue;
+			get => VoltageDiagnostic.ActualValue;
 			set
 			{
-				_voltageDiagnostic.ActualValue = value;
-				_voltageDiagnostic.SetDefaultSetting();
+				VoltageDiagnostic.ActualValue = value;
+				VoltageDiagnostic.SetDefaultSetting();
 
 				if (value < LightingConstants.MinVoltage.Volts)
 				{
-					_voltageDiagnostic.SetDiagnosticSetting(
+					VoltageDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MinVoltage,
 											severity: DiagnosticSeverity.Error,
-											parameter: DiagnosticParameter.Voltage,
 											message: $"Voltage value was set as ({value}), but it is below the under voltage threshold which is ({LightingConstants.MinVoltage} V)");
 				}
 				else if (value <= LightingConstants.MinWarningVoltage.Volts)
 				{
-					_voltageDiagnostic.SetDiagnosticSetting(
+					VoltageDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MinWarningVoltage,
 											severity: DiagnosticSeverity.Warning,
-											parameter: DiagnosticParameter.Voltage,
 											message: $"Voltage value was set as ({value}), but it is below the warning voltage threshold which is ({LightingConstants.MinWarningVoltage} V)");
 					return;
 				}
 				else if (value >= LightingConstants.MaxWarningVoltage.Volts)
 				{
-					_voltageDiagnostic.SetDiagnosticSetting(
+					VoltageDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MaxWarningVoltage,
 											severity: DiagnosticSeverity.Warning,
-											parameter: DiagnosticParameter.Voltage,
 											message: $"Voltage value was set as ({value}), but it is above the warning voltage threshold which is ({LightingConstants.MaxWarningVoltage} V)");
 					return;
 				}
 				else if (value > LightingConstants.MaxVoltage.Volts)
 				{
-					_voltageDiagnostic.SetDiagnosticSetting(
+					VoltageDiagnostic.SetDiagnosticSetting(
 											code: DiagnosticCode.MaxVoltage,
 											severity: DiagnosticSeverity.Error,
-											parameter: DiagnosticParameter.Voltage,
 											message: $"Voltage value was set as ({value}), but it exceeded the threshold voltage which is ({LightingConstants.MaxVoltage} V)");
 				}
 			}
 		}
-
 		public LightingStatus()
 		{
 			Mode = LightMode.Off;
-			DiagnosticManager = new DiagnosticManager();
+			DiagnosticManager = new DiagnosticManager(
+					temperatureDiagnostic: new Diagnostic<Temperature>(new Temperature(LightingConstants.OperatingTemperature)),
+					voltageDiagnostic: new Diagnostic<Voltage>(new Voltage(LightingConstants.OperatingVoltage)),
+					intensityDiagnostic: new Diagnostic<Intensity>(new Intensity(LightingConstants.StandardIntensity))
+			);
+
 		}
 
 	} 

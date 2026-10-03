@@ -11,3 +11,8 @@ Lightning.Domain/obj/
 
 Lightning.UnitTests/bin/
 Lightning.UnitTests/obj/
+
+Lighting.Api/bin/
+Lighting.Api/obj/
+Lighting.Api/Lighting.Api.http
+Lighting.Api/Lighting.Api.csproj.user

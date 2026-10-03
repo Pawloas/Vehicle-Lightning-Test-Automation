@@ -4,7 +4,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="Lightning.Api/Lighting.Api.csproj" />
+    <Project Path="Lighting.Api/Lighting.Api.csproj" Id="0a4b653a-eeb7-40c8-9946-17fdfea9de96" />
     <Project Path="Lightning.Domain/Lighting.Domain.csproj" />
   </Folder>
   <Folder Name="/tests/">

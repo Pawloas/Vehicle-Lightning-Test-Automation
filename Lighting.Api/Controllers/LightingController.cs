@@ -87,10 +87,12 @@ namespace Lighting.Api.Controllers
             return Ok(response);
         }
 
-        [HttpPost("set_mode")]
+        [HttpPost("set_mode/{mode}")]
         public ActionResult<string> Create(string mode = "")
         {
-            if (_lightingSystem.LightMode.ToString().Equals(mode))
+            bool endedParsingSuccesfully = Enum.TryParse<LightMode>(mode, out LightMode parsedLightMode);
+            Console.WriteLine($"status= {endedParsingSuccesfully}, mode= {parsedLightMode}");
+            if (endedParsingSuccesfully && _lightingSystem.LightMode == parsedLightMode)
             {
                 return Ok("OK");
             }
@@ -99,5 +101,6 @@ namespace Lighting.Api.Controllers
                 return BadRequest("NOK");
             }
         }
-	}
+
+    }
 }

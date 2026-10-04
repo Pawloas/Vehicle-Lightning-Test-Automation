@@ -14,37 +14,72 @@ namespace Lighting.Domain.Diagnostics
 		public LightMode Mode { get; set; } = LightMode.Off;
 		public DiagnosticManager DiagnosticManager { get; set; }
 
+		private readonly LightingStateMachine _lightingStateMachine;
+
 		private Diagnostic<Intensity> IntensityDiagnostic => DiagnosticManager.IntensityDiagnostic;
 		private Diagnostic<Temperature> TemperatureDiagnostic => DiagnosticManager.TemperatureDiagnostic;
 		private Diagnostic<Voltage> VoltageDiagnostic => DiagnosticManager.VoltageDiagnostic;
 
-		public void SetLightMode(LightMode newLightMode, bool canMakeTransition, HashSet<TransitionRule> transitionRules)
+
+
+		public LightingStatus()
 		{
+			Mode = LightMode.Off;
+			DiagnosticManager = new DiagnosticManager(
+					temperatureDiagnostic: new Diagnostic<Temperature>(new Temperature(LightingConstants.OperatingTemperature)),
+					voltageDiagnostic: new Diagnostic<Voltage>(new Voltage(LightingConstants.OperatingVoltage)),
+					intensityDiagnostic: new Diagnostic<Intensity>(new Intensity(LightingConstants.StandardIntensity))
+			);
 
-			if (canMakeTransition == false)
+			_lightingStateMachine = new LightingStateMachine();
+		}
+
+		private bool AreCurrentMeasurementsValid()
+		{
+			return IntensityDiagnostic.Severity == DiagnosticSeverity.Info &&
+				   TemperatureDiagnostic.Severity == DiagnosticSeverity.Info &&
+				   VoltageDiagnostic.Severity == DiagnosticSeverity.Info;
+		}
+
+		private bool AreNewMeasurementsInRange(TransitionRule transitionRule)
+		{
+			return transitionRule.AreMeasurementsInRange(
+									currentVoltage: VoltageDiagnostic.ActualValue,
+									currentTemperature: TemperatureDiagnostic.ActualValue,
+									currentIntensity: IntensityDiagnostic.ActualValue);
+		}
+
+		private bool CanMakeTransitionToNewMode(HashSet<TransitionRule> transitionRules)
+		{
+			return	DoesTransitionRuleExist(transitionRules) &&
+					AreCurrentMeasurementsValid() &&
+					AreNewMeasurementsInRange(transitionRules.First());
+		}
+
+		private static bool DoesTransitionRuleExist(HashSet<TransitionRule> transitionRules) => transitionRules.Count > 0;
+		private HashSet<TransitionRule> GetTransitionRulesForNewMode(LightMode newMode) => _lightingStateMachine.TransitionRulesToNewMode(from: Mode, to: newMode);
+
+
+		public bool TrySetLightMode(LightMode newMode)
+		{
+			HashSet<TransitionRule> transitionRules = GetTransitionRulesForNewMode(newMode);
+			
+			if (CanMakeTransitionToNewMode(transitionRules)) { return true; }
+
+			return false;
+		}
+
+		public void SetLightMode(LightMode newMode)
+		{
+			HashSet<TransitionRule> transitionRules = GetTransitionRulesForNewMode(newMode);
+
+			if (CanMakeTransitionToNewMode(transitionRules))
 			{
-				Console.WriteLine($"Transition from {Mode} to {newLightMode} is not allowed !");
-				return;
-			}
-
-			TransitionRule transitionRule = transitionRules.First();
-
-			bool areCurrentMeasurementsSeverityNotCritical = IntensityDiagnostic.Severity == DiagnosticSeverity.Info &&
-															 TemperatureDiagnostic.Severity == DiagnosticSeverity.Info &&
-															 VoltageDiagnostic.Severity == DiagnosticSeverity.Info;
-
-			bool areNewMeasurementsInRange = transitionRule.AreMeasurementsInRange(currentVoltage: VoltageDiagnostic.ActualValue,
-																					currentTemperature: TemperatureDiagnostic.ActualValue,
-																					currentIntensity: IntensityDiagnostic.ActualValue);
-
-			if (areCurrentMeasurementsSeverityNotCritical && areNewMeasurementsInRange)
-			{
-				Mode = newLightMode;
+				Mode = newMode;
 				IntensityDiagnostic.SetDefaultSetting();
 				TemperatureDiagnostic.SetDefaultSetting();
 				VoltageDiagnostic.SetDefaultSetting();
 			}
-
 		}
 
 		public void SetMinIntensity()
@@ -70,6 +105,12 @@ namespace Lighting.Domain.Diagnostics
 		public void SetMaxVoltage()
 		{
 			Voltage = LightingConstants.MaxVoltage;
+		}
+
+		public LightMode LightMode
+		{
+			get => Mode;
+			set => SetLightMode(value);
 		}
 
 		public Intensity Intensity
@@ -179,16 +220,7 @@ namespace Lighting.Domain.Diagnostics
 				}
 			}
 		}
-		public LightingStatus()
-		{
-			Mode = LightMode.Off;
-			DiagnosticManager = new DiagnosticManager(
-					temperatureDiagnostic: new Diagnostic<Temperature>(new Temperature(LightingConstants.OperatingTemperature)),
-					voltageDiagnostic: new Diagnostic<Voltage>(new Voltage(LightingConstants.OperatingVoltage)),
-					intensityDiagnostic: new Diagnostic<Intensity>(new Intensity(LightingConstants.StandardIntensity))
-			);
 
-		}
 
 	} 
 }

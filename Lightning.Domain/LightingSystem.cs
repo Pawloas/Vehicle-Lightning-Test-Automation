@@ -3,6 +3,7 @@ using Lighting.Domain.Diagnostics.MeasurementsInfo;
 using Lighting.Domain.StateMachine;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using System.Transactions;
 
@@ -10,21 +11,19 @@ namespace Lighting.Domain
 {
 	public class LightingSystem
 	{
-		private readonly LightingStatus _lightingStatus = new LightingStatus();
-		private readonly LightingStateMachine _lightingStateMachine = new LightingStateMachine();
+		private readonly LightingStatus _lightingStatus;
 
-		public LightingSystem() { }
+		public LightingSystem() 
+		{ 
+			_lightingStatus = new LightingStatus();
+		}
+
+		public bool TrySetLightMode(LightMode newMode) => _lightingStatus.TrySetLightMode(newMode);
 
 		public LightMode LightMode
 		{
 			get => _lightingStatus.Mode;
-			set
-			{
-				HashSet<TransitionRule> transitionRules = _lightingStateMachine.TransitionRulesToNewMode(from: _lightingStatus.Mode, to: value);
-				bool canMakeTransition = _lightingStateMachine.DoesTransitionRuleExist(transitionRules);
-
-				_lightingStatus.SetLightMode(value, _lightingStateMachine.CanMakeTransitionToNewMode(from: _lightingStatus.Mode, to: value), transitionRules);
-			}
+			set => _lightingStatus.SetLightMode(value);
 		}
 
 		public Intensity Intensity

@@ -88,9 +88,9 @@ namespace Lighting.Api.Controllers
         }
 
         [HttpPost("set_mode")]
-        public ActionResult<string> Create(string mode)
+        public ActionResult<string> Create(string mode = "")
         {
-            if (_lightingSystem.LightMode.ToString() == mode)
+            if (_lightingSystem.LightMode.ToString().Equals(mode))
             {
                 return Ok("OK");
             }
